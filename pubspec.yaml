@@ -1,0 +1,53 @@
+name: flutter_app
+description: Time Tracker - Registro de Actividades
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # UI & Icons
+  cupertino_icons: ^1.0.6
+  font_awesome_flutter: ^10.7.0
+  
+  # State Management
+  provider: 6.1.5
+  
+  # Local Storage (Pre-installed optimized versions)
+  hive: 2.2.3
+  hive_flutter: 1.1.0
+  
+  # Date & Time
+  intl: ^0.18.1
+  
+  # Charts & Visualizations
+  fl_chart: ^0.68.0
+  syncfusion_flutter_charts: ^24.2.9
+  
+  # Network Visualization (for neural network view)
+  graphview: ^1.2.0
+  
+  # Color Picker
+  flutter_colorpicker: ^1.0.3
+  
+  # Country & Flag Support
+  country_picker: ^2.0.23
+  
+  # Animations
+  animate_do: ^3.3.4
+  
+  # Utils
+  uuid: ^4.3.3
+  collection: ^1.18.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
