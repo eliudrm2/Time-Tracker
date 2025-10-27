@@ -43,11 +43,25 @@ dependencies:
   # Utils
   uuid: ^4.3.3
   collection: ^1.18.0
+  
+  # File operations
+  file_picker: ^8.0.0+1
+  share_plus: ^7.2.1
+  permission_handler: ^11.1.0
+  path_provider: ^2.1.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: assets/images/logo.png
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/images/logo.png
