@@ -5,7 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:animate_do/animate_do.dart';
 import '../providers/activity_provider.dart';
 import '../utils/theme.dart';
-import '../models/activity.dart';
+import '../l10n/app_localizations.dart';
 
 class StatisticsScreen extends StatefulWidget {
   const StatisticsScreen({Key? key}) : super(key: key);
@@ -44,9 +44,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                         size: 28,
                       ),
                       const SizedBox(width: 12),
-                      const Text(
-                        'Estadísticas y Análisis',
-                        style: TextStyle(
+                      Text(
+                        context.loc('statistics.header',
+                            fallback: 'Estadísticas y Análisis'),
+                        style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w600,
                           color: Colors.white,
@@ -119,37 +120,43 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       childAspectRatio: 1.5,
       children: [
         _buildStatCard(
-          'Total Actividades',
+          context.loc('statistics.totalActivities',
+              fallback: 'Total Actividades'),
           stats['totalActivities'].toString(),
           Icons.list_alt,
           AppTheme.primaryPurple,
         ),
         _buildStatCard(
-          'Actividades Únicas',
+          context.loc('statistics.uniqueActivities',
+              fallback: 'Actividades Únicas'),
           stats['uniqueActivities'].toString(),
           Icons.fingerprint,
           Colors.cyan,
         ),
         _buildStatCard(
-          'Categorías',
+          context.loc('statistics.categories',
+              fallback: 'Categorías'),
           stats['categories'].toString(),
           Icons.category,
           Colors.orange,
         ),
         _buildStatCard(
-          'Proveedores',
+          context.loc('statistics.providers',
+              fallback: 'Proveedores'),
           stats['providers'].toString(),
           Icons.business,
           Colors.green,
         ),
         _buildStatCard(
-          'Países',
+          context.loc('statistics.countries',
+              fallback: 'Países'),
           stats['countries'].toString(),
           Icons.public,
           Colors.blue,
         ),
         _buildStatCard(
-          'Días Activos',
+          context.loc('statistics.activeDays',
+              fallback: 'Días Activos'),
           stats['activeDays'].toString(),
           Icons.calendar_today,
           Colors.pink,
@@ -207,7 +214,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     final categoryData = provider.getCategoryDistribution();
     
     if (categoryData.isEmpty) {
-      return _buildEmptyChart('Actividades por Categoría');
+      return _buildEmptyChart(context.loc('statistics.categoryDistribution',
+          fallback: 'Actividades por Categoría'));
     }
     
     final colors = <Color>[];
@@ -231,9 +239,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Actividades por Categoría',
-            style: TextStyle(
+          Text(
+            context.loc('statistics.categoryDistribution',
+                fallback: 'Actividades por Categoría'),
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -359,9 +368,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Frecuencia Semanal',
-            style: TextStyle(
+          Text(
+            context.loc('statistics.weeklyFrequency',
+                fallback: 'Frecuencia Semanal'),
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -387,7 +397,15 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     sideTitles: SideTitles(
                       showTitles: true,
                       getTitlesWidget: (value, meta) {
-                        final days = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+                        final days = [
+                          context.loc('common.monday', fallback: 'Lun'),
+                          context.loc('common.tuesday', fallback: 'Mar'),
+                          context.loc('common.wednesday', fallback: 'Mié'),
+                          context.loc('common.thursday', fallback: 'Jue'),
+                          context.loc('common.friday', fallback: 'Vie'),
+                          context.loc('common.saturday', fallback: 'Sáb'),
+                          context.loc('common.sunday', fallback: 'Dom'),
+                        ];
                         return Padding(
                           padding: const EdgeInsets.only(top: 8),
                           child: Text(
@@ -474,7 +492,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     final providerData = provider.getProviderDistribution();
     
     if (providerData.isEmpty) {
-      return _buildEmptyChart('Actividades por Proveedor');
+      return _buildEmptyChart(context.loc('statistics.providerDistribution',
+          fallback: 'Actividades por Proveedor'));
     }
     
     final colors = List.generate(
@@ -491,9 +510,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Actividades por Proveedor',
-            style: TextStyle(
+          Text(
+            context.loc('statistics.providerDistribution',
+                fallback: 'Actividades por Proveedor'),
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -613,7 +633,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     final topCountries = sortedCountries.take(5).toList();
     
     if (topCountries.isEmpty) {
-      return _buildEmptyChart('Actividades por País');
+      return _buildEmptyChart(context.loc('statistics.countryDistribution',
+          fallback: 'Actividades por País'));
     }
     
     return Container(
@@ -625,9 +646,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Actividades por País',
-            style: TextStyle(
+          Text(
+            context.loc('statistics.countryDistribution',
+                fallback: 'Actividades por País'),
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -696,9 +718,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Análisis de Intervalos por Actividad',
-            style: TextStyle(
+          Text(
+            context.loc('statistics.intervalAnalysis',
+                fallback: 'Análisis de Intervalos por Actividad'),
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -709,7 +732,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           if (uniqueActivities.isEmpty)
             Center(
               child: Text(
-                'No hay actividades para analizar',
+                context.loc('statistics.empty',
+                    fallback: 'No hay actividades para analizar'),
                 style: TextStyle(
                   color: Colors.white.withValues(alpha: 0.6),
                   fontSize: 14,
@@ -754,7 +778,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                           ),
                         ),
                         Text(
-                          '($sameActivities actividad)',
+                          context.loc('statistics.singleActivity',
+                              fallback: '({count} actividad)',
+                              args: {'count': sameActivities.toString()}),
                           style: TextStyle(
                             color: Colors.white.withValues(alpha: 0.5),
                             fontSize: 12,
@@ -814,7 +840,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                             ),
                           ),
                           Text(
-                            '($sameActivities actividades)',
+                            context.loc('statistics.multipleActivities',
+                                fallback: '({count} actividades)',
+                                args: {'count': sameActivities.toString()}),
                             style: TextStyle(
                               color: Colors.white.withValues(alpha: 0.6),
                               fontSize: 12,
@@ -830,7 +858,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Intervalo promedio:',
+                                context.loc('statistics.interval.average',
+                                    fallback: 'Intervalo promedio:'),
                                 style: TextStyle(
                                   color: Colors.white.withValues(alpha: 0.6),
                                   fontSize: 11,
@@ -850,7 +879,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Text(
-                                'Último:',
+                                context.loc('statistics.interval.latest',
+                                    fallback: 'Último:'),
                                 style: TextStyle(
                                   color: Colors.white.withValues(alpha: 0.6),
                                   fontSize: 11,
@@ -873,14 +903,14 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Mín: ${_formatDuration(min)}',
+                            '${context.loc("statistics.interval.min", fallback: "Mín")}: ${_formatDuration(min)}',
                             style: TextStyle(
                               color: Colors.white.withValues(alpha: 0.5),
                               fontSize: 11,
                             ),
                           ),
                           Text(
-                            'Máx: ${_formatDuration(max)}',
+                            '${context.loc("statistics.interval.max", fallback: "Máx")}: ${_formatDuration(max)}',
                             style: TextStyle(
                               color: Colors.white.withValues(alpha: 0.5),
                               fontSize: 11,
@@ -890,7 +920,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Total: $sameActivities intervalos',
+                        context.loc('statistics.interval.totalIntervals',
+                            fallback: 'Total: {count} intervalos',
+                            args: {'count': sameActivities.toString()}),
                         style: TextStyle(
                           color: Colors.white.withValues(alpha: 0.5),
                           fontSize: 11,
@@ -935,7 +967,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'No hay datos para mostrar',
+                  context.loc('statistics.empty',
+                      fallback: 'No hay datos para mostrar'),
                   style: TextStyle(
                     color: Colors.white.withValues(alpha: 0.6),
                     fontSize: 14,
@@ -955,9 +988,16 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     final hours = duration.inHours % 24;
     
     if (days > 0) {
-      return '$days días con $hours horas';
+      final dayWord = context.loc('common.days', fallback: 'días');
+      final hourWord = context.loc('common.hours', fallback: 'horas');
+      return '$days $dayWord $hours $hourWord';
     } else {
-      return '$hours horas';
+      final hourWord = context.loc('common.hours', fallback: 'horas');
+      return '$hours $hourWord';
     }
   }
 }
+
+
+
+

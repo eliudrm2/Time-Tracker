@@ -6,6 +6,7 @@ import 'package:animate_do/animate_do.dart';
 import '../models/activity.dart';
 import '../providers/activity_provider.dart';
 import '../utils/theme.dart';
+import '../l10n/app_localizations.dart';
 import 'add_activity_screen.dart';
 
 class ActivitiesListScreen extends StatefulWidget {
@@ -17,9 +18,9 @@ class ActivitiesListScreen extends StatefulWidget {
 
 class _ActivitiesListScreenState extends State<ActivitiesListScreen> {
   final _searchController = TextEditingController();
-  String? _selectedCategory = 'Todas las categorías';
-  String? _selectedProvider = 'Todos los proveedores';
-  String? _selectedCountry = 'Todos los países';
+  String? _selectedCategory;
+  String? _selectedProvider;
+  String? _selectedCountry;
   bool _showFilters = false;
 
   @override
@@ -28,29 +29,39 @@ class _ActivitiesListScreenState extends State<ActivitiesListScreen> {
     super.dispose();
   }
 
-  String _formatInterval(Duration duration) {
+  String _formatInterval(Duration duration, BuildContext context) {
     final days = duration.inDays;
     final hours = duration.inHours % 24;
     
     if (days > 0) {
-      return '$days días con $hours horas';
+      final dayWord = context.loc('common.days', fallback: 'días');
+      final hourWord = context.loc('common.hours', fallback: 'horas');
+      return '$days $dayWord $hours $hourWord';
     } else {
-      return '$hours horas';
+      final hourWord = context.loc('common.hours', fallback: 'horas');
+      return '$hours $hourWord';
     }
   }
 
-  String _getTimeSince(DateTime date) {
+  String _getTimeSince(DateTime date, BuildContext context) {
     final now = DateTime.now();
     final difference = now.difference(date);
     
     if (difference.inDays > 0) {
-      return 'hace ${difference.inDays} días';
+      return context.loc('activities.timeSince.days',
+          fallback: 'hace {days} días',
+          args: {'days': difference.inDays.toString()});
     } else if (difference.inHours > 0) {
-      return 'hace ${difference.inHours} horas';
+      return context.loc('activities.timeSince.hours',
+          fallback: 'hace {hours} horas',
+          args: {'hours': difference.inHours.toString()});
     } else if (difference.inMinutes > 0) {
-      return 'hace ${difference.inMinutes} minutos';
+      return context.loc('activities.timeSince.minutes',
+          fallback: 'hace {minutes} minutos',
+          args: {'minutes': difference.inMinutes.toString()});
     } else {
-      return 'hace un momento';
+      return context.loc('activities.timeSince.moment',
+          fallback: 'hace un momento');
     }
   }
 
@@ -94,9 +105,10 @@ class _ActivitiesListScreenState extends State<ActivitiesListScreen> {
                           size: 24,
                         ),
                         const SizedBox(width: 12),
-                        const Text(
-                          'Registro de Actividades',
-                          style: TextStyle(
+                        Text(
+                          context.loc('activities.header',
+                              fallback: 'Registro de Actividades'),
+                          style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w600,
                             color: Colors.white,
@@ -125,7 +137,8 @@ class _ActivitiesListScreenState extends State<ActivitiesListScreen> {
                       controller: _searchController,
                       style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
-                        hintText: 'Buscar actividad...',
+                        hintText: context.loc('activities.search.hint',
+                            fallback: 'Buscar actividad...'),
                         prefixIcon: const Icon(
                           Icons.search,
                           color: AppTheme.lightPurple,
@@ -146,16 +159,18 @@ class _ActivitiesListScreenState extends State<ActivitiesListScreen> {
                             // Category Filter
                             DropdownButtonFormField<String>(
                               value: _selectedCategory,
-                              decoration: const InputDecoration(
-                                labelText: 'Categoría',
-                                prefixIcon: Icon(Icons.category),
+                              decoration: InputDecoration(
+                                labelText: context.loc('activities.filter.category',
+                                    fallback: 'Categoría'),
+                                prefixIcon: const Icon(Icons.category),
                               ),
                               dropdownColor: AppTheme.surfaceDark,
                               style: const TextStyle(color: Colors.white),
                               items: [
-                                const DropdownMenuItem(
-                                  value: 'Todas las categorías',
-                                  child: Text('Todas las categorías'),
+                                DropdownMenuItem(
+                                  value: null,
+                                  child: Text(context.loc('activities.filter.allCategories',
+                                      fallback: 'Todas las categorías')),
                                 ),
                                 ...provider.categories.map((cat) => 
                                   DropdownMenuItem(
@@ -175,16 +190,18 @@ class _ActivitiesListScreenState extends State<ActivitiesListScreen> {
                             // Provider Filter
                             DropdownButtonFormField<String>(
                               value: _selectedProvider,
-                              decoration: const InputDecoration(
-                                labelText: 'Proveedor',
-                                prefixIcon: Icon(Icons.business),
+                              decoration: InputDecoration(
+                                labelText: context.loc('activities.filter.provider',
+                                    fallback: 'Proveedor'),
+                                prefixIcon: const Icon(Icons.business),
                               ),
                               dropdownColor: AppTheme.surfaceDark,
                               style: const TextStyle(color: Colors.white),
                               items: [
-                                const DropdownMenuItem(
-                                  value: 'Todos los proveedores',
-                                  child: Text('Todos los proveedores'),
+                                DropdownMenuItem(
+                                  value: null,
+                                  child: Text(context.loc('activities.filter.allProviders',
+                                      fallback: 'Todos los proveedores')),
                                 ),
                                 ...provider.providers.map((prov) => 
                                   DropdownMenuItem(
@@ -204,16 +221,18 @@ class _ActivitiesListScreenState extends State<ActivitiesListScreen> {
                             // Country Filter  
                             DropdownButtonFormField<String>(
                               value: _selectedCountry,
-                              decoration: const InputDecoration(
-                                labelText: 'País',
-                                prefixIcon: Icon(Icons.public),
+                              decoration: InputDecoration(
+                                labelText: context.loc('activities.filter.country',
+                                    fallback: 'País'),
+                                prefixIcon: const Icon(Icons.public),
                               ),
                               dropdownColor: AppTheme.surfaceDark,
                               style: const TextStyle(color: Colors.white),
                               items: [
-                                const DropdownMenuItem(
-                                  value: 'Todos los países',
-                                  child: Text('Todos los países'),
+                                DropdownMenuItem(
+                                  value: null,
+                                  child: Text(context.loc('activities.filter.allCountries',
+                                      fallback: 'Todos los países')),
                                 ),
                                 ...provider.countries.map((country) => 
                                   DropdownMenuItem(
@@ -246,7 +265,7 @@ class _ActivitiesListScreenState extends State<ActivitiesListScreen> {
                     });
                   },
                   icon: const Icon(Icons.refresh),
-                  label: const Text('Actualizar'),
+                  label: Text(context.loc('common.refresh', fallback: 'Actualizar')),
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(double.infinity, 48),
                   ),
@@ -268,7 +287,8 @@ class _ActivitiesListScreenState extends State<ActivitiesListScreen> {
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              'No hay actividades registradas',
+                              context.loc('activities.empty.title',
+                                  fallback: 'No hay actividades registradas'),
                               style: TextStyle(
                                 color: Colors.white.withValues(alpha: 0.6),
                                 fontSize: 16,
@@ -502,9 +522,9 @@ class _ActivitiesListScreenState extends State<ActivitiesListScreen> {
                           color: Colors.green.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Text(
-                          'Reciente',
-                          style: TextStyle(
+                        child: Text(
+                          context.loc('common.recent', fallback: 'Reciente'),
+                          style: const TextStyle(
                             color: Colors.green,
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
@@ -579,7 +599,7 @@ class _ActivitiesListScreenState extends State<ActivitiesListScreen> {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              'Intervalo: ${_formatInterval(interval)}',
+                              '${context.loc("activities.interval.label", fallback: "Intervalo")}: ${_formatInterval(interval, context)}',
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 14,
@@ -590,7 +610,7 @@ class _ActivitiesListScreenState extends State<ActivitiesListScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Desde: $previousDateText',
+                          '${context.loc("activities.interval.from", fallback: "Desde")}: $previousDateText',
                           style: TextStyle(
                             color: Colors.white.withValues(alpha: 0.7),
                             fontSize: 12,
@@ -599,7 +619,7 @@ class _ActivitiesListScreenState extends State<ActivitiesListScreen> {
                         if (averageInterval != null && averageInterval.inSeconds > 0) ...[
                           const SizedBox(height: 4),
                           Text(
-                            'Promedio: ${_formatInterval(averageInterval)}',
+                            '${context.loc("activities.interval.avgLabel", fallback: "Promedio")}: ${_formatInterval(averageInterval, context)}',
                             style: TextStyle(
                               color: AppTheme.lightPurple.withValues(alpha: 0.8),
                               fontSize: 12,
@@ -629,7 +649,9 @@ class _ActivitiesListScreenState extends State<ActivitiesListScreen> {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          'Primer registro de "${activity.name}"',
+                          context.loc('activities.firstRecord',
+                              fallback: 'Primer registro de "{name}"',
+                              args: {'name': activity.name}),
                           style: const TextStyle(
                             color: Colors.blue,
                             fontSize: 13,
@@ -675,7 +697,7 @@ class _ActivitiesListScreenState extends State<ActivitiesListScreen> {
                 // Time since
                 const SizedBox(height: 12),
                 Text(
-                  _getTimeSince(activity.date),
+                  _getTimeSince(activity.date, context),
                   style: TextStyle(
                     color: Colors.white.withValues(alpha: 0.5),
                     fontSize: 12,
@@ -713,7 +735,8 @@ class _ActivitiesListScreenState extends State<ActivitiesListScreen> {
               const SizedBox(height: 20),
               ListTile(
                 leading: const Icon(Icons.edit, color: Colors.blue),
-                title: const Text('Editar', style: TextStyle(color: Colors.white)),
+                title: Text(context.loc('activities.menu.edit', fallback: 'Editar'),
+                    style: const TextStyle(color: Colors.white)),
                 onTap: () async {
                   Navigator.pop(context);
                   final result = await Navigator.push(
@@ -729,7 +752,8 @@ class _ActivitiesListScreenState extends State<ActivitiesListScreen> {
               ),
               ListTile(
                 leading: const Icon(Icons.delete, color: Colors.red),
-                title: const Text('Eliminar', style: TextStyle(color: Colors.white)),
+                title: Text(context.loc('activities.menu.delete', fallback: 'Eliminar'),
+                    style: const TextStyle(color: Colors.white)),
                 onTap: () {
                   Navigator.pop(context);
                   _confirmDelete(activity);
@@ -748,14 +772,18 @@ class _ActivitiesListScreenState extends State<ActivitiesListScreen> {
       builder: (context) {
         return AlertDialog(
           backgroundColor: AppTheme.cardDark,
-          title: const Text('Confirmar eliminación'),
+          title: Text(context.loc('activities.dialog.delete.title',
+              fallback: 'Confirmar eliminación')),
           content: Text(
-            '¿Estás seguro de que deseas eliminar "${activity.name}"?',
+            context.loc('activities.dialog.delete.message',
+                fallback: '¿Estás seguro de que deseas eliminar "{name}"?',
+                args: {'name': activity.name}),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancelar'),
+              child: Text(context.loc('activities.dialog.delete.cancel',
+                  fallback: 'Cancelar')),
             ),
             ElevatedButton(
               onPressed: () {
@@ -766,7 +794,8 @@ class _ActivitiesListScreenState extends State<ActivitiesListScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
               ),
-              child: const Text('Eliminar'),
+              child: Text(context.loc('activities.dialog.delete.confirm',
+                  fallback: 'Eliminar')),
             ),
           ],
         );

@@ -6,9 +6,6 @@ class ActivityProvider extends ChangeNotifier {
   List<Activity> _activities = [];
   Map<String, String> _categoryColors = {};
   bool _isLoading = false;
-  String? _selectedCategory;
-  String? _selectedProvider;
-  String? _selectedCountry;
   
   List<Activity> get activities => _activities;
   Map<String, String> get categoryColors => _categoryColors;

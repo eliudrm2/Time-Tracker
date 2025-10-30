@@ -5,6 +5,7 @@ import 'dart:math' as math;
 import '../providers/activity_provider.dart';
 import '../utils/theme.dart';
 import '../models/activity.dart';
+import '../l10n/app_localizations.dart';
 
 class NetworkMapScreen extends StatefulWidget {
   const NetworkMapScreen({Key? key}) : super(key: key);
@@ -367,7 +368,9 @@ class _NetworkMapScreenState extends State<NetworkMapScreen>
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text(
-              '$sameActivities veces',
+              context.loc('network.times',
+                  fallback: '{count} veces',
+                  args: {'count': sameActivities.toString()}),
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 10,
@@ -404,9 +407,10 @@ class _NetworkMapScreenState extends State<NetworkMapScreen>
                           size: 28,
                         ),
                         const SizedBox(width: 12),
-                        const Text(
-                          'Mapa de Actividades',
-                          style: TextStyle(
+                        Text(
+                          context.loc('network.header',
+                              fallback: 'Mapa de Actividades'),
+                          style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w600,
                             color: Colors.white,
@@ -452,7 +456,8 @@ class _NetworkMapScreenState extends State<NetworkMapScreen>
                                     ),
                                     const SizedBox(width: 8),
                                     Text(
-                                      'Vista Temporal',
+                                      context.loc('network.view.timeline',
+                                          fallback: 'Vista Temporal'),
                                       style: TextStyle(
                                         color: _isTemporalView 
                                             ? Colors.white 
@@ -493,7 +498,8 @@ class _NetworkMapScreenState extends State<NetworkMapScreen>
                                     ),
                                     const SizedBox(width: 8),
                                     Text(
-                                      'Vista por Categorías',
+                                      context.loc('network.view.categories',
+                                          fallback: 'Vista por Categorías'),
                                       style: TextStyle(
                                         color: !_isTemporalView 
                                             ? Colors.white 
@@ -527,7 +533,8 @@ class _NetworkMapScreenState extends State<NetworkMapScreen>
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              'No hay actividades para mostrar',
+                              context.loc('network.empty.title',
+                                  fallback: 'No hay actividades para mostrar'),
                               style: TextStyle(
                                 color: Colors.white.withValues(alpha: 0.6),
                                 fontSize: 16,
@@ -535,7 +542,8 @@ class _NetworkMapScreenState extends State<NetworkMapScreen>
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'Agrega actividades para ver el mapa',
+                              context.loc('network.empty.subtitle',
+                                  fallback: 'Agrega actividades para ver el mapa'),
                               style: TextStyle(
                                 color: Colors.white.withValues(alpha: 0.4),
                                 fontSize: 14,
@@ -570,3 +578,7 @@ class _NetworkMapScreenState extends State<NetworkMapScreen>
     );
   }
 }
+
+
+
+

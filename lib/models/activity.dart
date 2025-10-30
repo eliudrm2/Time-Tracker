@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
 
@@ -46,10 +46,13 @@ class Activity extends HiveObject {
   })  : id = id ?? const Uuid().v4(),
         createdAt = createdAt ?? DateTime.now();
 
-  Color get color => Color(int.parse(colorHex.replaceFirst('#', '0xff')));
+  Color get color => Color(int.parse(colorHex.replaceFirst('#', '0xFF')));
   
   set color(Color newColor) {
-    colorHex = '#${newColor.value.toRadixString(16).substring(2).toUpperCase()}';
+    final red = newColor.red.toRadixString(16).padLeft(2, '0');
+    final green = newColor.green.toRadixString(16).padLeft(2, '0');
+    final blue = newColor.blue.toRadixString(16).padLeft(2, '0');
+    colorHex = '#${(red + green + blue).toUpperCase()}';
   }
 
   Map<String, dynamic> toJson() {
@@ -69,14 +72,17 @@ class Activity extends HiveObject {
   factory Activity.fromJson(Map<String, dynamic> json) {
     return Activity(
       id: json['id'],
-      name: json['name'],
-      category: json['category'],
-      provider: json['provider'],
-      country: json['country'],
-      date: DateTime.parse(json['date']),
-      colorHex: json['colorHex'],
-      notes: json['notes'],
-      createdAt: DateTime.parse(json['createdAt']),
+      name: _normalizeLegacyValue(json['name'] as String? ?? 'Actividad sin nombre'),
+      category: _normalizeLegacyValue(json['category'] as String? ?? 'Sin categoría'),
+      provider: _normalizeLegacyValue(json['provider'] as String? ?? 'Sin proveedor'),
+      country: _normalizeLegacyValue(json['country'] as String? ?? 'Sin país'),
+      date: DateTime.tryParse(json['date'] as String? ?? '') ?? DateTime.now(),
+      colorHex: (json['colorHex'] as String?) ?? '#8B5CF6',
+      notes: json['notes'] as String?,
+      createdAt: json['createdAt'] != null
+          ? DateTime.tryParse(json['createdAt'] as String? ?? '')
+                  ?? DateTime.now()
+          : DateTime.now(),
     );
   }
 
@@ -102,3 +108,30 @@ class Activity extends HiveObject {
     );
   }
 }
+
+String _normalizeLegacyValue(String value) {
+  var normalized = value;
+  const replacements = {
+    'Sin categoría': 'Sin categoría',
+    'Sin categor�a': 'Sin categoría',
+    'Sin país': 'Sin país',
+    'Sin pa�s': 'Sin país',
+    'categor�a': 'categoría',
+    'Categor�a': 'Categoría',
+    'categor�as': 'categorías',
+    'Categor�as': 'Categorías',
+    'pa�s': 'país',
+    'Pa�s': 'País',
+    'pa�ses': 'países',
+    'Pa�ses': 'Países',
+  };
+  for (final entry in replacements.entries) {
+    if (normalized.contains(entry.key)) {
+      normalized = normalized.replaceAll(entry.key, entry.value);
+    }
+  }
+  return normalized;
+}
+
+
+

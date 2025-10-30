@@ -7,6 +7,7 @@ import 'package:country_picker/country_picker.dart';
 import '../models/activity.dart';
 import '../providers/activity_provider.dart';
 import '../utils/theme.dart';
+import '../l10n/app_localizations.dart';
 
 class AddActivityScreen extends StatefulWidget {
   final Activity? activityToEdit;
@@ -87,6 +88,8 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
       },
     );
     
+    if (!context.mounted) return;
+
     if (date != null) {
       final time = await showTimePicker(
         context: context,
@@ -106,6 +109,8 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
         },
       );
       
+      if (!context.mounted) return;
+
       if (time != null) {
         setState(() {
           _selectedDate = DateTime(
@@ -126,7 +131,8 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: AppTheme.cardDark,
-          title: const Text('Seleccionar Color'),
+          title: Text(context.loc('addActivity.color.select',
+              fallback: 'Seleccionar Color')),
           content: SingleChildScrollView(
             child: ColorPicker(
               pickerColor: _selectedColor,
@@ -141,11 +147,13 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
           ),
           actions: [
             TextButton(
-              child: const Text('Cancelar'),
+              child: Text(context.loc('common.cancel',
+                  fallback: 'Cancelar')),
               onPressed: () => Navigator.of(context).pop(),
             ),
             ElevatedButton(
-              child: const Text('Seleccionar'),
+              child: Text(context.loc('common.confirm',
+                  fallback: 'Seleccionar')),
               onPressed: () => Navigator.of(context).pop(),
             ),
           ],
@@ -154,20 +162,23 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
     );
   }
 
-  void _saveActivity() {
+  Future<void> _saveActivity() async {
     if (_formKey.currentState!.validate()) {
       final provider = context.read<ActivityProvider>();
       
       final category = _selectedExistingCategory ?? _categoryController.text;
       final providerName = _selectedExistingProvider ?? _providerController.text;
       final country = _selectedCountry?.name ?? _countryController.text;
+      final sanitizedCategory = category.isEmpty ? 'Sin categoría' : category;
+      final sanitizedProvider = providerName.isEmpty ? 'Sin proveedor' : providerName;
+      final sanitizedCountry = country.isEmpty ? 'Sin país' : country;
       
       final activity = Activity(
         id: widget.activityToEdit?.id,
         name: _nameController.text,
-        category: category.isEmpty ? 'Sin categoría' : category,
-        provider: providerName.isEmpty ? 'Sin proveedor' : providerName,
-        country: country.isEmpty ? 'Sin país' : country,
+        category: sanitizedCategory,
+        provider: sanitizedProvider,
+        country: sanitizedCountry,
         date: _selectedDate,
         colorHex: _hexController.text,
         notes: _notesController.text.isEmpty ? null : _notesController.text,
@@ -175,15 +186,16 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
       );
       
       if (widget.activityToEdit != null) {
-        provider.updateActivity(activity);
+        await provider.updateActivity(activity);
       } else {
-        provider.addActivity(activity);
+        await provider.addActivity(activity);
       }
       
-      if (_applyCategoryColor && category.isNotEmpty) {
-        provider.applyCategoryColor(category, _hexController.text);
+      if (_applyCategoryColor && sanitizedCategory.isNotEmpty) {
+        await provider.applyCategoryColor(sanitizedCategory, _hexController.text);
       }
       
+      if (!context.mounted) return;
       Navigator.of(context).pop(true);
     }
   }
@@ -218,8 +230,10 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                     const SizedBox(width: 12),
                     Text(
                       widget.activityToEdit != null 
-                          ? 'Editar Actividad' 
-                          : 'Registrar Nueva Actividad',
+                          ? context.loc('addActivity.title.edit',
+                              fallback: 'Editar Actividad')
+                          : context.loc('addActivity.title.new',
+                              fallback: 'Registrar Nueva Actividad'),
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
@@ -253,16 +267,19 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // Nombre de la Actividad
-                          _buildLabel('Nombre de la Actividad', Icons.edit),
+                          _buildLabel(context.loc('addActivity.name.label',
+                              fallback: 'Nombre de la Actividad'), Icons.edit),
                           TextFormField(
                             controller: _nameController,
                             style: const TextStyle(color: Colors.white),
-                            decoration: const InputDecoration(
-                              hintText: 'Ej: Ejercicio, Lectura, Proyecto...',
+                            decoration: InputDecoration(
+                              hintText: context.loc('addActivity.name.hint',
+                                  fallback: 'Ej: Ejercicio, Lectura, Proyecto...'),
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Por favor ingresa el nombre';
+                                return context.loc('addActivity.validation.required',
+                                    fallback: 'Por favor ingresa el nombre');
                               }
                               return null;
                             },
@@ -270,21 +287,24 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                           const SizedBox(height: 20),
                           
                           // Categoría
-                          _buildLabel('Categoría', Icons.category),
+                          _buildLabel(context.loc('addActivity.category.label',
+                              fallback: 'Categoría'), Icons.category),
                           Row(
                             children: [
                               Expanded(
                                 child: DropdownButtonFormField<String>(
                                   value: _selectedExistingCategory,
-                                  decoration: const InputDecoration(
-                                    hintText: 'Selecciona o escribe nueva...',
+                                  decoration: InputDecoration(
+                                    hintText: context.loc('addActivity.category.hint',
+                                        fallback: 'Selecciona o escribe nueva...'),
                                   ),
                                   dropdownColor: AppTheme.surfaceDark,
                                   style: const TextStyle(color: Colors.white),
                                   items: [
-                                    const DropdownMenuItem(
+                                    DropdownMenuItem(
                                       value: null,
-                                      child: Text('Nueva categoría...'),
+                                      child: Text(context.loc('addActivity.category.new',
+                                          fallback: 'Nueva categoría...')),
                                     ),
                                     ...provider.categories.map((cat) => 
                                       DropdownMenuItem(
@@ -317,26 +337,30 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                             TextFormField(
                               controller: _categoryController,
                               style: const TextStyle(color: Colors.white),
-                              decoration: const InputDecoration(
-                                hintText: 'Escribe nueva categoría',
+                              decoration: InputDecoration(
+                                hintText: context.loc('addActivity.category.hint',
+                                    fallback: 'Escribe nueva categoría'),
                               ),
                             ),
                           ],
                           const SizedBox(height: 20),
                           
                           // Proveedor
-                          _buildLabel('Proveedor', Icons.business),
+                          _buildLabel(context.loc('addActivity.provider.label',
+                              fallback: 'Proveedor'), Icons.business),
                           DropdownButtonFormField<String>(
                             value: _selectedExistingProvider,
-                            decoration: const InputDecoration(
-                              hintText: 'Selecciona o escribe nuevo...',
+                            decoration: InputDecoration(
+                              hintText: context.loc('addActivity.provider.hint',
+                                  fallback: 'Selecciona o escribe nuevo proveedor'),
                             ),
                             dropdownColor: AppTheme.surfaceDark,
                             style: const TextStyle(color: Colors.white),
                             items: [
-                              const DropdownMenuItem(
+                              DropdownMenuItem(
                                 value: null,
-                                child: Text('Nuevo proveedor...'),
+                                child: Text(context.loc('addActivity.provider.new',
+                                    fallback: 'Nuevo proveedor...')),
                               ),
                               ...provider.providers.map((prov) => 
                                 DropdownMenuItem(
@@ -359,15 +383,17 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                             TextFormField(
                               controller: _providerController,
                               style: const TextStyle(color: Colors.white),
-                              decoration: const InputDecoration(
-                                hintText: 'Escribe nuevo proveedor',
+                              decoration: InputDecoration(
+                                hintText: context.loc('addActivity.provider.hint',
+                                    fallback: 'Escribe nuevo proveedor'),
                               ),
                             ),
                           ],
                           const SizedBox(height: 20),
                           
                           // País
-                          _buildLabel('País', Icons.public),
+                          _buildLabel(context.loc('addActivity.country.label',
+                              fallback: 'País'), Icons.public),
                           GestureDetector(
                             onTap: () {
                               showCountryPicker(
@@ -384,7 +410,8 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                                   textStyle: const TextStyle(color: Colors.white),
                                   searchTextStyle: const TextStyle(color: Colors.white),
                                   inputDecoration: InputDecoration(
-                                    hintText: 'Buscar país',
+                                    hintText: context.loc('addActivity.country.search',
+                                        fallback: 'Buscar país'),
                                     hintStyle: TextStyle(
                                       color: Colors.white.withValues(alpha: 0.5),
                                     ),
@@ -402,7 +429,8 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                                 controller: _countryController,
                                 style: const TextStyle(color: Colors.white),
                                 decoration: InputDecoration(
-                                  hintText: 'Selecciona país',
+                                  hintText: context.loc('addActivity.country.hint',
+                                      fallback: 'Selecciona país'),
                                   suffixIcon: _selectedCountry != null
                                       ? Text(
                                           _selectedCountry!.flagEmoji,
@@ -416,7 +444,8 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                           const SizedBox(height: 20),
                           
                           // Fecha y Hora
-                          _buildLabel('Fecha y Hora', Icons.calendar_today),
+                          _buildLabel(context.loc('addActivity.dateTime.label',
+                              fallback: 'Fecha y Hora'), Icons.calendar_today),
                           GestureDetector(
                             onTap: _selectDate,
                             child: Container(
@@ -456,7 +485,8 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                           const SizedBox(height: 20),
                           
                           // Color
-                          _buildLabel('Color', Icons.palette),
+                          _buildLabel(context.loc('addActivity.color.label',
+                              fallback: 'Color'), Icons.palette),
                           Row(
                             children: [
                               GestureDetector(
@@ -479,9 +509,10 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                                 child: TextFormField(
                                   controller: _hexController,
                                   style: const TextStyle(color: Colors.white),
-                                  decoration: const InputDecoration(
+                                  decoration: InputDecoration(
                                     hintText: '#8B5CF6',
-                                    labelText: 'Código hexadecimal',
+                                    labelText: context.loc('addActivity.color.hex',
+                                        fallback: 'Código hexadecimal'),
                                   ),
                                   inputFormatters: [
                                     FilteringTextInputFormatter.allow(
@@ -537,7 +568,8 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: Text(
-                                      'Aplicar este color a todas las actividades de esta categoría',
+                                      context.loc('addActivity.color.applyToCategory',
+                                          fallback: 'Aplicar este color a todas las actividades de esta categoría'),
                                       style: TextStyle(
                                         color: Colors.white.withValues(alpha: 0.9),
                                         fontSize: 13,
@@ -550,13 +582,15 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                           const SizedBox(height: 20),
                           
                           // Notas
-                          _buildLabel('Notas (Opcional)', Icons.note),
+                          _buildLabel(context.loc('addActivity.notes.label',
+                              fallback: 'Notas (Opcional)'), Icons.note),
                           TextFormField(
                             controller: _notesController,
                             style: const TextStyle(color: Colors.white),
                             maxLines: 3,
-                            decoration: const InputDecoration(
-                              hintText: 'Añade cualquier nota o detalle sobre esta actividad...',
+                            decoration: InputDecoration(
+                              hintText: context.loc('addActivity.notes.hint',
+                                  fallback: 'Añade cualquier nota o detalle sobre esta actividad...'),
                             ),
                           ),
                           const SizedBox(height: 30),
@@ -565,12 +599,14 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton.icon(
-                              onPressed: _saveActivity,
+                              onPressed: () => _saveActivity(),
                               icon: const Icon(Icons.save),
                               label: Text(
                                 widget.activityToEdit != null 
-                                    ? 'Actualizar Actividad' 
-                                    : 'Guardar Actividad',
+                                    ? context.loc('addActivity.button.update',
+                                        fallback: 'Actualizar Actividad')
+                                    : context.loc('addActivity.button.save',
+                                        fallback: 'Guardar Actividad'),
                                 style: const TextStyle(fontSize: 16),
                               ),
                               style: ElevatedButton.styleFrom(
@@ -615,3 +651,13 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
     );
   }
 }
+
+
+
+
+
+
+
+
+
+

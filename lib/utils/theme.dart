@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 
 class AppTheme {
   static const Color primaryPurple = Color(0xFF8B5CF6);
@@ -136,3 +136,5 @@ class AppTheme {
     Color(0xFF6366F1), // Índigo
   ];
 }
+
+
