@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <full-backup-content>
-    <!-- Include Hive boxes and app preferences stored in internal storage -->
-    <include domain="database" path="."/>
     <include domain="sharedpref" path="."/>
-    <exclude domain="database" path="*:journal"/>
-    <exclude domain="database" path="*:wal"/>
+    <include domain="database" path="."/>
+    <include domain="file" path="."/>
+    <exclude domain="sharedpref" path="device.xml"/>
 </full-backup-content>
